@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
 from PyQt5.QtWidgets import QVBoxLayout, QGridLayout
-from PyQt5.QtWidgets import QPushButton, QSizePolicy, QFrame
+from PyQt5.QtWidgets import QPushButton, QSizePolicy, QFrame, QMessageBox
 from PyQt5.QtGui import QIcon
 
 from PyQt5.QtWidgets import QScrollArea
@@ -78,8 +78,14 @@ class MainWindow(QMainWindow):
             d.open_file(bt.text())
         else:
             txt = bt.text()
-            dir_conts = d.get_dir_cont(txt, self.sort, self.ascending)
-            self._generateFileItems(dir_conts, self.showHidden)
+            try:
+                dir_conts = d.get_dir_cont(txt, self.sort, self.ascending)
+                self._generateFileItems(dir_conts, self.showHidden)
+            except PermissionError:
+                dialog = QMessageBox()
+                dialog.setText('Failed to open directory/file. Do not have sufficient permissions')
+                dialog.setStandardButtons(QMessageBox.Close)
+                dialog.exec()
 
 
 def main():
