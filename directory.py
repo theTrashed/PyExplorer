@@ -13,11 +13,12 @@ def sort_dir_list(dir_conts, r=False):
 
 
 def get_dir_cont(new_dir_path='~', sort=True, ascending=False):
-    os.chdir(os.path.expanduser(new_dir_path))
+    path = os.path.join(os.curdir, os.path.expanduser(new_dir_path))
+    os.chdir(path)
 
     dir_cont = {}
     # Check if the directory is the root directory or not
-    if (os.path.dirname(os.curdir) != os.curdir):
+    if (os.getcwd() != os.sep):
         dir_cont['..'] = 'dir'
     dirs = os.listdir()
     for d in dirs:
@@ -36,7 +37,8 @@ def open_file(file_path):
     if sys.platform.startswith('darwin'):
         subprocess.call(['open', os.path.join(os.curdir, file_path)])
     elif sys.platform.startswith('win32'):
-        subprocess.call(['cmd', '/c' , 'start', os.path.join(os.curdir, file_path)])
+        subprocess.call(['cmd', '/c', 'start', os.path.join(os.curdir,
+                                                            file_path)])
     elif sys.platform.startswith('linux'):
         subprocess.call(['xdg-open', os.path.join(os.curdir, file_path)])
     else:

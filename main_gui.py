@@ -18,69 +18,68 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.btns = []
         self.btn_count = len(self.btns)
+        self.ascending = False
+        self.sort = False
+        self.showHidden = False
 
         self.initUI(listView, showHidden=True)
 
     def initUI(self, listView, showHidden=False):
+        self.sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.scroll = QScrollArea()
         self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scroll.setWidgetResizable(True)
+        self.main_widget = QWidget()
         if (listView):
-            self.main_widget = QWidget()
             self.main_layout = QVBoxLayout()
+            self.main_widget.setSizePolicy(self.sizePolicy)
 
             self.main_widget.setLayout(self.main_layout)
-            sizePolicy = QSizePolicy(QSizePolicy.Expanding,
-                                     QSizePolicy.Expanding)
 
             dir_conts = d.get_dir_cont(sort=True)
-            for name, t in zip(dir_conts.keys(), dir_conts.values()):
-                if ((not showHidden) and (name[0] == '.')):
-                    continue
-                else:
-                    self.btns.append(QPushButton(f'button{self.btn_count}'))
-                    self.btn_count = len(self.btns)
-                    print(self.btn_count)
-                    index = self.btn_count
-                    self.btns[index - 1].setText(name)
-                    if (t == 'dir'):
-                        self.btns[index- 1].setStyleSheet('color: rgba(0,0,0,100);')
-                    else:
-                        pass
-                    self.btns[index - 1].setStyleSheet('text-align: left;')
-                    self.btns[index - 1].setFlat(True)
-                    self.btns[index - 1].setSizePolicy(sizePolicy)
-                    self.btns[index - 1].clicked.connect(partial(self._clickHandle, self.btns[index - 1]))
-                    self.main_layout.addWidget(self.btns[index - 1])
-                    print(index)
-                    separator = QFrame()
-                    separator.setFrameShape(QFrame.HLine)
-                    separator.setLineWidth(1)
-                    self.main_layout.addWidget(separator)
+            self._generateFileItems(dir_conts, False)
 
-            del dir_conts
             self.scroll.setWidget(self.main_widget)
             self.setCentralWidget(self.scroll)
 
-    def _clickHandle(self, bt):
-        d.open_file(bt.text())
-#        txt = btn.text()
-#        dir_conts = d.get_dir_cont(txt, self.sort, self.ascending)
-#
-#        for name, t in zip(dir_conts.keys(), dir_conts.values()):
-#            print(name[0], t)
-#            if ((not self.showHidden) and (name[0] == '.')):
-#                continue
-#            else:
-#                btn = QPushButton()
-#                btn.setText(name)
-#                if (t == 'dir'):
-#                    btn.setIcon(QIcon('./images/folder.png'))
-#                else:
-#                    pass
-#                btn.clicked.connect(lambda: self._clickHandle(btn))
-#                self.main_layout.addWidget(btn)
+    def _generateFileItems(self, dir_conts, showHidden):
+        for i in range(self.main_layout.count()):
+            self.main_layout.itemAt(i).widget().deleteLater()
+
+        del self.btns
+        self.btns = []
+        self.btn_count = 0
+
+        for name, t in zip(dir_conts.keys(), dir_conts.values()):
+            if ((not showHidden) and (name[0] == '.') and (name != '..')):
+                continue
+            else:
+                self.btns.append(QPushButton(f'button{self.btn_count}'))
+                self.btn_count = len(self.btns)
+                self.btns[self.btn_count - 1].setText(name)
+                if (t == 'dir'):
+                    self.btns[self.btn_count - 1].setStyleSheet('color: rgba(0,0,0,100);')
+                else:
+                    pass
+                self.btns[self.btn_count - 1].setStyleSheet('text-align: left;')
+                self.btns[self.btn_count - 1].setFlat(True)
+                self.btns[self.btn_count - 1].setSizePolicy(self.sizePolicy)
+                self.btns[self.btn_count - 1].clicked.connect(partial(self._clickHandle, self.btns[self.btn_count - 1], t))
+                self.main_layout.addWidget(self.btns[self.btn_count - 1])
+                separator = QFrame()
+                separator.setFrameShape(QFrame.HLine)
+                separator.setLineWidth(1)
+                self.main_layout.addWidget(separator)
+        self.main_widget.update()
+
+    def _clickHandle(self, bt, t):
+        if (t == 'file'):
+            d.open_file(bt.text())
+        else:
+            txt = bt.text()
+            dir_conts = d.get_dir_cont(txt, self.sort, self.ascending)
+            self._generateFileItems(dir_conts, self.showHidden)
 
 
 def main():
