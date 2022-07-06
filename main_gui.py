@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
 from PyQt5.QtWidgets import QVBoxLayout, QGridLayout, QScrollArea
 from PyQt5.QtWidgets import QPushButton, QSizePolicy, QFrame, QMessageBox
-from PyQt5.QtWidgets import QToolBar, QToolButton
+from PyQt5.QtWidgets import QAction, QToolBar
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt, QTimeLine, QObjectCleanupHandler
 
@@ -59,10 +59,12 @@ class MainWindow(QMainWindow):
             self.setCentralWidget(self.scroll)
 
     def _generateFileItems(self, dir_conts):
+        self._generateToolBar(dir_conts)
         if (self.listView):
             self._generateListView(dir_conts)
         else:
             self._generateGridView(dir_conts)
+        self.main_widget.update()
 
     def _clickHandle(self, bt, t):
         if (t == 'file'):
@@ -71,6 +73,7 @@ class MainWindow(QMainWindow):
             txt = bt.text().lstrip()
             try:
                 dir_conts = d.get_dir_cont(txt, self.sort, self.notAscending)
+                self._generateToolBar(dir_conts)
                 self._generateFileItems(dir_conts)
             except PermissionError:
                 dialog = QMessageBox()
@@ -79,29 +82,49 @@ class MainWindow(QMainWindow):
                 dialog.setStandardButtons(QMessageBox.Close)
                 dialog.exec()
 
-    def _generateToolBar(self):
-        pass
+    def _generateToolBar(self, dir_conts):
+        if hasattr(self, 'toolbar'):
+            self.toolbar.clear()
+            self.toolbar.setParent(None)
+
+        sortAct = QAction('Sort', self)
+        sortAct.setShortcut('Ctrl+S')
+        sortAct.triggered.connect(partial(self._toggleSort, dir_conts))
+
+        hiddenAct = QAction('Hidden', self)
+        hiddenAct.setShortcut('Ctrl+H')
+        hiddenAct.triggered.connect(partial(self._toggleHidden, dir_conts))
+
+        self.toolbar = self.addToolBar('toolbar')
+        self.toolbar.setMovable(False)
+        self.toolbar.addAction(sortAct)
+        self.toolbar.addAction(hiddenAct)
+        if self.sort:
+            ascendingAct = QAction('Ascending', self)
+            ascendingAct.setShortcut('Ctrl+A')
+            ascendingAct.triggered.connect(
+                partial(self._toggleAscending, dir_conts))
+            self.toolbar.addAction(ascendingAct)
 
     def _toggleHidden(self, dir_conts):
         self.showHidden = not self.showHidden
-        self._generateFileItems(dir_conts, self.showHidden)
+        self._generateFileItems(dir_conts)
 
     def _toggleSort(self, dir_conts):
         self.sort = not self.sort
         dir_conts = d.sort_dir_list(dir_conts, r=self.notAscending)
-        self._generateFileItems(dir_conts, self.showHidden)
+        self._generateFileItems(dir_conts)
 
-    def _toggleSortOrder(self, dir_conts):
+    def _toggleAscending(self, dir_conts):
         if self.sort:
             self.notAscending = not self.notAscending
             dir_conts = d.sort_dir_list(dir_conts, r=self.notAscending)
-            self._generateFileItems(dir_conts, self.showHidden)
+            self._generateFileItems(dir_conts)
 
     def _generateListView(self, dir_conts):
         for i in range(self.main_layout.count()):
             self.main_layout.itemAt(i).widget().deleteLater()
 
-        # https://stackoverflow.com/questions/10416582/replacing-layout-on-a-qwidget-with-another-layout
         try:
             QObjectCleanupHandler().add(self.main_layout)
         except AttributeError:
