@@ -40,6 +40,6 @@ def open_file(file_path):
         subprocess.call(['cmd', '/c', 'start', os.path.join(os.curdir,
                                                             file_path)])
     elif sys.platform.startswith('linux'):
-        subprocess.call(['xdg-open', os.path.join(os.curdir, file_path)])
+        subprocess.call(['xdg-open', file_path])
     else:
         print('No support for unknown OS')
