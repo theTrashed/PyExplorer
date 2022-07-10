@@ -53,8 +53,6 @@ class MainWindow(QMainWindow):
             dir_conts = d.get_dir_cont(sort=self.sort)
             self._generateFileItems(dir_conts)
 
-            self.scroll.setWidget(self.main_widget)
-            self.setCentralWidget(self.scroll)
         else:
             self.rows = 0
             self.columns = 0
@@ -63,8 +61,8 @@ class MainWindow(QMainWindow):
             dir_conts = d.get_dir_cont(sort=self.sort)
             self._generateFileItems(dir_conts)
 
-            self.scroll.setWidget(self.main_widget)
-            self.setCentralWidget(self.scroll)
+        self.scroll.setWidget(self.main_widget)
+        self.setCentralWidget(self.scroll)
 
     def _generateFileItems(self, dir_conts):
         # Function to generate the view, with toolbar
@@ -236,9 +234,7 @@ class MainWindow(QMainWindow):
             else:
                 self.btns.append(QPushButton())
                 self.btnCount = len(self.btns)
-                self.btns[self.btnCount - 1].setText(ww.wrap(name,
-                                                             self.gridLabelMaxLineLen,
-                                                             self.gridLabelMaxRows))
+                self.btns[self.btnCount - 1].setText(ww.wrap(name, self.gridLabelMaxLineLen, self.gridLabelMaxRows))
                 if (t == 'dir'):
                     self.btns[self.btnCount - 1].setObjectName('dir')
                 else:

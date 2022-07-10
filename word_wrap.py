@@ -31,16 +31,17 @@ def wrap(text, maxLineLen, maxLineNum=2):
                 break
 
         line = returnTxt[i]
-        for j, c in enumerate(reversed(line)):
-            try:
-                if(line[lineLen-(j+1)].isupper() and
-                   line[lineLen-(j+2)].islower()):
-                    returnTxt[i+1] = returnTxt[i][lineLen-(j+1):] + \
-                                     returnTxt[i+1]
-                    returnTxt[i] = returnTxt[i][:lineLen-(j+1)]
-                    break
-            except IndexError:
-                pass
+        if (len(line) >= maxLineLen):
+            for j, c in enumerate(reversed(line)):
+                try:
+                    if(line[lineLen-(j+1)].isupper() and
+                       line[lineLen-(j+2)].islower()):
+                        returnTxt[i+1] = returnTxt[i][lineLen-(j+1):] + \
+                                        returnTxt[i+1]
+                        returnTxt[i] = returnTxt[i][:lineLen-(j+1)]
+                        break
+                except IndexError:
+                    pass
 
     if (returnTxt[-1] != ''):
         returnTxt[-2] = returnTxt[-2][:maxLineLen-3] + '...'
