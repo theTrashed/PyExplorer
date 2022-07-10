@@ -6,13 +6,18 @@ from PyQt5.QtWidgets import QAction
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt, QObjectCleanupHandler, QSize
 
+# Style sheet
+from darktheme.widget_template import DarkPalette
+
 # Importing helper libraries
 import sys
 import os
 from functools import partial
 
-# Importing user defined library that retrieves directory content
+# Importing user defined library that retrieves directory content and for
+# word wrapping
 import directory as d
+import word_wrap as ww
 
 
 class MainWindow(QMainWindow):
@@ -26,8 +31,8 @@ class MainWindow(QMainWindow):
         self.sort = True
         self.showHidden = True
         self.listView = False
-        self.gridMaxLineLen = 16
-        self.wrappingChars = ('-', '_', '.', '?', ' ', '&')
+        self.gridLabelMaxLineLen = 16
+        self.gridLabelMaxRows = 2
         self.listSizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.gridSizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
@@ -230,7 +235,9 @@ class MainWindow(QMainWindow):
             else:
                 self.btns.append(QPushButton())
                 self.btnCount = len(self.btns)
-                self.btns[self.btnCount - 1].setText(self._wordWrap(name))
+                self.btns[self.btnCount - 1].setText(ww.wrap(name,
+                                                             self.gridLabelMaxLineLen,
+                                                             self.gridLabelMaxRows))
                 if (t == 'dir'):
                     self.btns[self.btnCount - 1].setObjectName('dir')
                 else:
@@ -261,7 +268,7 @@ class MainWindow(QMainWindow):
                 self.btns[self.btnCount - 1].setMinimumWidth(100)
                 self.btns[self.btnCount - 1].setMinimumHeight(100)
                 self.btns[self.btnCount - 1].setFlat(True)
-                self.btns[self.btnCount - 1].setFixedSize(QSize(150, 150))
+                self.btns[self.btnCount - 1].setFixedSize(QSize(175, 150))
                 self.btns[self.btnCount - 1].setSizePolicy(self.gridSizePolicy)
                 self.btns[self.btnCount - 1].clicked.connect(
                     partial(self._clickHandle, name, t))
@@ -277,29 +284,6 @@ class MainWindow(QMainWindow):
             self.scroll.verticalScrollBar().minimum())
         self.main_widget.update()
 
-    def _wordWrap(self, text):
-
-        newText = ''
-        rows = 1
-        for i, char in enumerate(text):
-            if (((i % self.gridMaxLineLen) == 0) and (i != 0)):
-                if (char not in self.wrappingChars):
-                    for c in reversed(newText):
-                        if (c not in self.wrappingChars):
-                            continue
-
-                        j = newText[::-1].index(c)
-                        rows += 1
-                        if (rows > 3):
-                            return newText[:len(newText) - j] + '...'
-                        newText = newText[:len(newText) - j] + \
-                            '\n' + \
-                            newText[len(newText) - j:]
-                        break
-            newText += char
-
-        return newText
-
 
 def main():
     app = QApplication.instance()
@@ -307,6 +291,7 @@ def main():
         app = QApplication(sys.argv)
 
     ex = MainWindow()
+    app.setPalette(DarkPalette())
     ex.show()
     sys.exit(app.exec_())
 
