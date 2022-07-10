@@ -10,7 +10,7 @@ def wrap(text, maxLineLen, maxLineNum=2):
     # Extra line appended to avoid indexing errors
     returnTxt.append('')
 
-    if ((rtl := len(returnTxt)) == 2):
+    if (len(returnTxt) == 2):
         return returnTxt[0]
 
     for line in returnTxt:
@@ -42,7 +42,7 @@ def wrap(text, maxLineLen, maxLineNum=2):
             except IndexError:
                 pass
 
-        if ((i == (rtl - 2)) and (returnTxt[rtl-1] != '')):
-            returnTxt[i] = returnTxt[i][:maxLineLen-3] + '...'
+    if (returnTxt[-1] != ''):
+        returnTxt[-2] = returnTxt[-2][:maxLineLen-3] + '...'
 
     return '\n'.join(returnTxt[:maxLineNum])

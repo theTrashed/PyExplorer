@@ -9,7 +9,12 @@ def sort_dir_list(dir_conts, r=False):
     dir_conts = {k: v for k, v in sorted(dir_conts.items(), key=lambda item:
                                          item[1])}
 
-    return dir_conts
+    # Ensures that '..' remains at the first position in the list
+    if ('..' in dir_conts.keys()):
+        del dir_conts['..']
+        return {'..': 'dir', **dir_conts}
+    else:
+        return dir_conts
 
 
 def get_dir_cont(new_dir_path='~', sort=True, ascending=False):

@@ -46,7 +46,6 @@ class MainWindow(QMainWindow):
         # Set a ScrollArea that allows scrolling of the main interface
         self.scroll = QScrollArea()
         self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scroll.setWidgetResizable(True)
         self.main_widget = QWidget()
         # Set SizePolicy on the basis of listView or gridView
@@ -121,10 +120,10 @@ class MainWindow(QMainWindow):
         # Add the actions to the toolbar
         self.toolbar = self.addToolBar('toolbar')
         self.toolbar.setMovable(False)
-        self.toolbar.addWidget(spacer)
         self.toolbar.addAction(viewAct)
         self.toolbar.addAction(hiddenAct)
         self.toolbar.addAction(sortAct)
+        self.toolbar.addWidget(spacer)
         if (self.sort):
             ascendingAct = QAction('Ascending', self)
             ascendingAct.setShortcut('Ctrl+A')
@@ -193,9 +192,11 @@ class MainWindow(QMainWindow):
                 if (t == 'dir'):
                     self.btns[self.btnCount -
                               1].setIcon(QIcon(os.path.join(self.path, 'images/folder.png')))
+                    self.btns[self.btnCount - 1].setIconSize(QSize(30, 35))
                 else:
                     self.btns[self.btnCount -
                               1].setIcon(QIcon(os.path.join(self.path, 'images/file.png')))
+                    self.btns[self.btnCount - 1].setIconSize(QSize(20, 20))
                 self.btns[self.btnCount -
                           1].setStyleSheet('text-align: left;')
                 self.btns[self.btnCount - 1].setFlat(True)
