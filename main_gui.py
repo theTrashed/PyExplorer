@@ -83,7 +83,6 @@ class MainWindow(QMainWindow):
         else:
             try:
                 dir_conts = d.get_dir_cont(name, self.sort, self.notAscending)
-                self._generateToolBar(dir_conts)
                 self._generateFileItems(dir_conts)
             # If unable to open directory, display pop-up box
             except PermissionError:
@@ -313,8 +312,6 @@ def main():
         app = QApplication(sys.argv)
 
     ex = MainWindow()
-    ex.setAttribute(Qt.WA_AcceptTouchEvents, True)
-    ex.installEventFilter(ex)
     app.setPalette(DarkPalette())
     ex.show()
     sys.exit(app.exec_())
