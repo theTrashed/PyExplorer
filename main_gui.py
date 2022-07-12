@@ -106,14 +106,28 @@ class MainWindow(QMainWindow):
         sortAct = QAction('Sort', self)
         sortAct.setShortcut('Ctrl+S')
         sortAct.triggered.connect(partial(self._toggleSort, dir_conts))
+        if (self.sort):
+            sortAct.setIcon(QIcon(os.path.join(self.path, 'images/nosort.png')))
+        else:
+            sortAct.setIcon(QIcon(os.path.join(self.path, 'images/sort.png')))
 
         hiddenAct = QAction('Hidden', self)
         hiddenAct.setShortcut('Ctrl+H')
         hiddenAct.triggered.connect(partial(self._toggleHidden, dir_conts))
+        if (self.showHidden):
+            hiddenAct.setIcon(QIcon(
+                os.path.join(self.path, 'images/hidden_hide.png')))
+        else:
+            hiddenAct.setIcon(QIcon(
+                os.path.join(self.path, 'images/hidden_show.png')))
 
         viewAct = QAction('View', self)
         viewAct.setShortcut('Ctrl+L')
         viewAct.triggered.connect(partial(self._toggleView, dir_conts))
+        if (self.listView):
+            viewAct.setIcon(QIcon(os.path.join(self.path, 'images/grid.png')))
+        else:
+            viewAct.setIcon(QIcon(os.path.join(self.path, 'images/list.png')))
 
         # Add the actions to the toolbar
         self.toolbar = self.addToolBar('toolbar')
@@ -127,6 +141,13 @@ class MainWindow(QMainWindow):
             ascendingAct.setShortcut('Ctrl+A')
             ascendingAct.triggered.connect(
                 partial(self._toggleAscending, dir_conts))
+            if (self.notAscending):
+                ascendingAct.setIcon(QIcon(
+                    os.path.join(self.path, 'images/ascending.png')))
+            else:
+                ascendingAct.setIcon(QIcon(
+                    os.path.join(self.path, 'images/descending.png')))
+
             self.toolbar.addAction(ascendingAct)
 
     def _toggleHidden(self, dir_conts):
