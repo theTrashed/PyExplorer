@@ -9,7 +9,8 @@ def sort_dir_list(dir_conts, r=False):
     dir_conts = {k: v for k, v in sorted(dir_conts.items(), key=lambda item:
                                          item[1])}
 
-    # Ensures that '..' remains at the first position in the list
+    # Ensures that '..' remains at the first position in the list as dicts are
+    # ordered since python 3.6
     if ('..' in dir_conts.keys()):
         del dir_conts['..']
         return {'..': 'dir', **dir_conts}

@@ -7,7 +7,7 @@ from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt, QObjectCleanupHandler, QSize
 
 # Style sheet
-from darktheme.widget_template import DarkPalette
+from palette import DarkPalette
 
 # Importing helper libraries
 import sys
@@ -31,7 +31,7 @@ class MainWindow(QMainWindow):
         self.sort = True
         self.showHidden = True
         self.listView = False
-        self.gridLabelMaxLineLen = 16
+        self.gridLabelMaxLineLen = 15
         self.gridLabelMaxRows = 2
         self.listSizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.gridSizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
@@ -40,7 +40,7 @@ class MainWindow(QMainWindow):
 
     def initUI(self):
         # Initial geometry of the window
-        self.setGeometry(300, 250, 600, 450)
+        self.setGeometry(300, 250, 1000, 800)
         self.setFont(QFont('Monospace'))
 
         # Set a ScrollArea that allows scrolling of the main interface
@@ -56,7 +56,6 @@ class MainWindow(QMainWindow):
         else:
             self.rows = 0
             self.columns = 0
-            self.maxCols = 5
 
             dir_conts = d.get_dir_cont(sort=self.sort)
             self._generateFileItems(dir_conts)
@@ -71,6 +70,7 @@ class MainWindow(QMainWindow):
             self.main_widget.setSizePolicy(self.listSizePolicy)
             self._generateListView(dir_conts)
         else:
+            self.maxCols = self._adjustIconNum()
             self.main_widget.setSizePolicy(self.gridSizePolicy)
             self._generateGridView(dir_conts)
         self.main_widget.update()
@@ -302,6 +302,10 @@ class MainWindow(QMainWindow):
             self.scroll.verticalScrollBar().minimum())
         self.main_widget.update()
 
+    def _adjustIconNum(self):
+        width = self.frameGeometry().width()
+        return width // 175  # Since 175 is the size of the button
+
 
 def main():
     app = QApplication.instance()
@@ -309,6 +313,8 @@ def main():
         app = QApplication(sys.argv)
 
     ex = MainWindow()
+    ex.setAttribute(Qt.WA_AcceptTouchEvents, True)
+    ex.installEventFilter(ex)
     app.setPalette(DarkPalette())
     ex.show()
     sys.exit(app.exec_())
