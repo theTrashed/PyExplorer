@@ -10,9 +10,6 @@ def wrap(text, maxLineLen, maxLineNum=2):
     # Extra line appended to avoid indexing errors
     returnTxt.append('')
 
-    if (len(returnTxt) == 2):
-        return returnTxt[0]
-
     for line in returnTxt:
         i = returnTxt.index(line)
         lineLen = len(line)
